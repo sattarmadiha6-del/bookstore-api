@@ -27,6 +27,10 @@ const bookSchema = new mongoose.Schema(
       type: Date,
       required: [true, 'Published date is required'],
     },
+    createdBy: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: 'User',
+},
   },
   { timestamps: true }
 );

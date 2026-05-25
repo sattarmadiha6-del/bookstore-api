@@ -24,8 +24,7 @@ const createBook = async (req, res) => {
         message: 'All fields are required: title, author, price, isbn, publishedDate',
       });
     }
-
-    const book = await Book.create({ title, author, price, isbn, publishedDate });
+      const book = await Book.create({ title, author, price, isbn, publishedDate, createdBy: req.body.createdBy });
 
     res.status(201).json({
       success: true,
@@ -69,6 +68,7 @@ const getAllBooks = async (req, res) => {
 
     const totalBooks = await Book.countDocuments(filter);
     const books = await Book.find(filter)
+      .populate('createdBy', 'name email')
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);

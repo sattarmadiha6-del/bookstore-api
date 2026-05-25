@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
@@ -13,6 +14,9 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 const bookRoutes = require('./routes/bookRoutes');
 app.use('/api/books', bookRoutes);
+// Users
+const userRoutes = require('./routes/userRoutes');
+app.use('/api/users', userRoutes);
 
 // Root route — health check
 app.get('/', (req, res) => {
