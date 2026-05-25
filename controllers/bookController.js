@@ -53,9 +53,31 @@ const createBook = async (req, res) => {
 // GET /api/books — Get all books
 const getAllBooks = async (req, res) => {
   try {
-    const books = await Book.find().sort({ createdAt: -1 });
+    // Pagination
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    // Search filters
+    const filter = {};
+    if (req.query.title) {
+      filter.title = { $regex: req.query.title, $options: 'i' };
+    }
+    if (req.query.author) {
+      filter.author = { $regex: req.query.author, $options: 'i' };
+    }
+
+    const totalBooks = await Book.countDocuments(filter);
+    const books = await Book.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
     res.status(200).json({
       success: true,
+      total: totalBooks,
+      page: page,
+      totalPages: Math.ceil(totalBooks / limit),
       count: books.length,
       data: books,
     });
@@ -63,7 +85,6 @@ const getAllBooks = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error', error: error.message });
   }
 };
-
 // GET /api/books/:id — Get single book
 const getBookById = async (req, res) => {
   try {
